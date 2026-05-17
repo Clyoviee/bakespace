@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitives & Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isAdmin() { 
+      return isSignedIn() && (
+        request.auth.token.email in ['admin@gmail.com', 'claudiagilbran38255@gmail.com'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    // --- Validation Helpers ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'name', 'email', 'role']) &&
+             data.keys().size() <= 7 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.role in ['admin', 'user'];
+    }
+
+    function isValidCourse(data) {
+      return data.keys().hasAll(['title', 'description', 'price', 'priceFormatted', 'schedule', 'image', 'level', 'slots', 'availableSlots']) &&
+             data.title is string &&
+             data.description is string &&
+             data.price is number &&
+             data.slots is number &&
+             data.availableSlots is number;
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll(['id', 'userId', 'userName', 'courseId', 'courseTitle', 'courseImage', 'date', 'totalPrice', 'totalPriceFormatted', 'status', 'paymentStatus', 'paymentMethod', 'participants', 'createdAt']) &&
+             data.userId is string &&
+             data.status in ['Pending', 'Confirmed', 'Completed', 'Cancelled'] &&
+             data.paymentStatus in ['Unpaid', 'Checking', 'Paid'] &&
+             data.participants is number;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'title', 'description', 'time', 'icon', 'type']) &&
+             data.userId is string &&
+             data.type in ['success', 'payment', 'reminder', 'warning'];
+    }
+
+    // --- Collection Rules ---
+
+    match /users/{userId} {
+      allow list: if isAdmin();
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if (isAdmin() || (isOwner(userId) && incoming().role == existing().role)) && isValidUser(incoming());
+    }
+
+    match /courses/{courseId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidCourse(incoming());
+      allow update: if (isAdmin() && isValidCourse(incoming())) || 
+                     (isSignedIn() && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['availableSlots']) &&
+                      incoming().availableSlots >= 0);
+      allow delete: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow list, get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (incoming().userId == request.auth.uid || isAdmin()) && isValidBooking(incoming());
+      allow update: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid && isValidBooking(incoming()));
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notiId} {
+      allow list, get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (incoming().userId == request.auth.uid || isAdmin()) && isValidNotification(incoming());
+      allow update: if (isAdmin() || isOwner(existing().userId));
+      allow delete: if (isAdmin() || isOwner(existing().userId));
+    }
+  }
+}

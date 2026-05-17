@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "avatar": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Baking class information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "priceFormatted": { "type": "string" },
+        "schedule": { "type": "string" },
+        "image": { "type": "string" },
+        "level": { "type": "string", "enum": ["Beginner", "Intermediate", "Advanced"] },
+        "slots": { "type": "number" }
+      },
+      "required": ["id", "title", "description", "price", "priceFormatted", "schedule", "image", "level", "slots"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A registration for a baking course",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "courseId": { "type": "string" },
+        "courseTitle": { "type": "string" },
+        "courseImage": { "type": "string" },
+        "date": { "type": "string" },
+        "totalPrice": { "type": "number" },
+        "totalPriceFormatted": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Completed", "Cancelled"] },
+        "paymentStatus": { "type": "string", "enum": ["Unpaid", "Checking", "Paid"] },
+        "paymentMethod": { "type": "string" },
+        "participants": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "userName", "courseId", "courseTitle", "courseImage", "date", "totalPrice", "totalPriceFormatted", "status", "paymentStatus", "paymentMethod", "participants", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "time": { "type": "string" },
+        "icon": { "type": "string" },
+        "type": { "type": "string", "enum": ["success", "payment", "reminder"] }
+      },
+      "required": ["id", "userId", "title", "description", "time", "icon", "type"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Collection of user profiles"
+    },
+    "courses": {
+      "schema": "Course",
+      "description": "Collection of baking courses"
+    },
+    "bookings": {
+      "schema": "Booking",
+      "description": "Collection of course bookings"
+    },
+    "notifications": {
+      "schema": "Notification",
+      "description": "Collection of user notifications"
+    }
+  }
+}

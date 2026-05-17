@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-quicksand: "Quicksand", sans-serif;
+  
+  /* Brand Colors from User Request */
+  --color-cream: #FFF8F3;
+  --color-pink-pastel: #FFD6E0;
+  --color-peach: #FFE5B4;
+  --color-lavender: #E9D7FF;
+  --color-coklat-susu: #8B6F5A;
+  --color-coklat-tua: #5A4332;
+
+  /* Theme Mapping */
+  --color-primary: #8B6F5A; /* coklat-susu */
+  --color-on-primary: #ffffff;
+  --color-primary-container: #FFE5B4; /* peach */
+  --color-on-primary-container: #5A4332;
+  
+  --color-secondary: #FFD6E0; /* pink-pastel */
+  --color-on-secondary: #5A4332;
+  --color-secondary-container: #E9D7FF; /* lavender */
+  
+  --color-background: #FFF8F3; /* cream */
+  --color-on-background: #5A4332;
+  
+  --color-surface: rgba(255, 255, 255, 0.75);
+  --color-on-surface: #5A4332;
+  --color-on-surface-variant: #8B6F5A;
+  
+  --color-outline: rgba(139, 111, 90, 0.2);
+  --color-outline-variant: #cfc5b7;
+  
+  --radius-xl: 30px;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  
+  --shadow-soft: 0 10px 40px rgba(139, 111, 90, 0.15);
+  --shadow-hover: 0 15px 50px rgba(139, 111, 90, 0.25);
+  --shadow-card: 0 20px 60px -15px rgba(0, 0, 0, 0.1);
+}
+
+@layer base {
+  body {
+    @apply font-quicksand bg-[#FFF8F3] text-coklat-tua min-h-screen transition-colors duration-300;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins text-coklat-tua;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 25px 80px -20px rgba(139, 111, 90, 0.15);
+  }
+
+  .admin-sidebar {
+    background: linear-gradient(180deg, #5A4332 0%, #423023 100%);
+  }
+
+  .nav-item-active {
+    background: #FFD6E0;
+    color: #5A4332 !important;
+    box-shadow: 0 10px 25px -5px rgba(255, 214, 224, 0.4);
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(#d9c5b2 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+  }
+}
+
+.bg-baker-fullscreen {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=2000&auto=format&fit=crop');
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.input-group {
+  @apply flex flex-col gap-1.5 mb-6 text-left;
+}
+
+.input-group label {
+  @apply text-sm font-semibold text-coklat-susu px-1;
+}
+
+.input-group input, .input-group select {
+  @apply w-full px-5 py-4 bg-white border border-transparent rounded-2xl focus:border-pink-pastel text-coklat-tua font-medium transition-all outline-none shadow-sm placeholder:text-gray-300;
+}
+
+.btn-primary {
+  @apply bg-[#FFD6E0] text-coklat-tua px-8 py-4 rounded-full font-poppins font-bold transition-all duration-300 inline-block text-center cursor-pointer shadow-md;
+}
+
+.btn-primary:hover {
+  @apply bg-[#ffc1d0] -translate-y-0.5 shadow-lg brightness-105;
+}
+
+.btn-secondary {
+  @apply bg-lavender text-coklat-tua px-8 py-4 rounded-full font-poppins font-semibold transition-all duration-300 inline-block text-center cursor-pointer shadow-sm;
+}
+
+.btn-secondary:hover {
+  @apply brightness-105 -translate-y-0.5 shadow-md;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+

@@ -1,0 +1,6 @@
+{
+  "name": "BakeSpace",
+  "description": "Platform komunitas baking premium untuk belajar dan berbagi kreasi pastri artisanal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

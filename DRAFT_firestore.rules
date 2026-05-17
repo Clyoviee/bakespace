@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+
+    // --- Schemas ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'name', 'email', 'role']) &&
+             data.keys().size() <= 5 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.role in ['admin', 'user'];
+    }
+
+    function isValidCourse(data) {
+      return data.keys().hasAll(['id', 'title', 'description', 'price', 'priceFormatted', 'schedule', 'image', 'level', 'slots']) &&
+             data.keys().size() == 9 &&
+             data.title is string && data.title.size() <= 100 &&
+             data.price is number && data.price >= 0 &&
+             data.level in ['Beginner', 'Intermediate', 'Advanced'];
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll(['id', 'userId', 'userName', 'courseId', 'courseTitle', 'courseImage', 'date', 'totalPrice', 'totalPriceFormatted', 'status', 'paymentStatus', 'participants', 'createdAt']) &&
+             data.keys().size() <= 14 &&
+             data.userId == request.auth.uid &&
+             data.status in ['Pending', 'Confirmed', 'Completed', 'Cancelled'] &&
+             data.paymentStatus in ['Unpaid', 'Checking', 'Paid'];
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'description', 'time', 'icon', 'type']) &&
+             data.userId == request.auth.uid &&
+             data.type in ['success', 'payment', 'reminder'];
+    }
+
+    // --- Rules ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming()) && incoming().role == 'user'; // Users can't make themselves admin
+      allow update: if (isOwner(userId) && isValidUser(incoming()) && incoming().role == existing().role) || isAdmin();
+    }
+
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidCourse(incoming());
+    }
+
+    match /bookings/{bookingId} {
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && isValidBooking(incoming());
+      allow update: if (isAdmin() && isValidBooking(incoming())) ||
+                    (isOwner(existing().userId) && isValidBooking(incoming()) && 
+                     incoming().diff(existing()).affectedKeys().hasOnly(['status']) &&
+                     incoming().status == 'Cancelled');
+    }
+
+    match /notifications/{notiId} {
+      allow list: if isOwner(resource.data.userId);
+      allow create: if isAdmin() || (isSignedIn() && incoming().userId == request.auth.uid); // System or user can create
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+  }
+}
