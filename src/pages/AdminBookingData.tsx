@@ -29,9 +29,10 @@ export default function AdminBookingData() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-[40px] shadow-card overflow-hidden border border-white"
+          className="bg-white rounded-[30px] md:rounded-[40px] shadow-card overflow-hidden border border-white"
         >
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#FFF8F3]">
@@ -85,15 +86,15 @@ export default function AdminBookingData() {
                               Complete
                             </button>
                           )}
-                            {booking.status !== 'Cancelled' && booking.status !== 'Completed' && (
-                              <button 
-                                onClick={() => updateBookingStatus(booking.id, 'Cancelled')}
-                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-all border border-red-100"
-                                title="Cancel Booking"
-                              >
-                                <X size={16} />
-                              </button>
-                            )}
+                          {booking.status !== 'Cancelled' && booking.status !== 'Completed' && (
+                            <button 
+                              onClick={() => updateBookingStatus(booking.id, 'Cancelled')}
+                              className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-all border border-red-100"
+                              title="Cancel Booking"
+                            >
+                              <X size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -105,6 +106,77 @@ export default function AdminBookingData() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-[#FFF8F3]">
+            {bookings.length > 0 ? (
+              bookings.map((booking) => (
+                <div key={booking.id} className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-bold text-coklat-susu uppercase tracking-widest mb-1">Order ID: {booking.id}</p>
+                      <h4 className="text-base font-bold text-coklat-tua">{booking.userName}</h4>
+                      <p className="text-sm font-medium text-coklat-susu">{booking.courseTitle}</p>
+                    </div>
+                    <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${getStatusStyle(booking.status)}`}>
+                      {booking.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#FFF8F3]">
+                    <div>
+                      <p className="text-[10px] font-bold text-coklat-susu uppercase tracking-widest mb-1">Participants</p>
+                      <p className="text-sm font-bold text-coklat-tua">{booking.participants} Pax</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-coklat-susu uppercase tracking-widest mb-1">Total Amount</p>
+                      <p className="text-sm font-bold text-pink-pastel">{booking.totalPriceFormatted}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-bold text-coklat-susu uppercase tracking-widest mb-1">Payment via {booking.paymentMethod}</p>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                        booking.paymentStatus === 'Paid' ? 'text-green-600' : 'text-orange-600'
+                      }`}>
+                        ● {booking.paymentStatus}
+                      </span>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                       {booking.status === 'Pending' && (
+                        <button 
+                          onClick={() => updateBookingStatus(booking.id, 'Confirmed', 'Paid')}
+                          className="bg-pink-pastel text-coklat-tua px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+                        >
+                          Confirm
+                        </button>
+                      )}
+                      {booking.status === 'Confirmed' && (
+                        <button 
+                          onClick={() => updateBookingStatus(booking.id, 'Completed')}
+                          className="bg-lavender text-coklat-tua px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+                        >
+                          Complete
+                        </button>
+                      )}
+                      {booking.status !== 'Cancelled' && booking.status !== 'Completed' && (
+                        <button 
+                          onClick={() => updateBookingStatus(booking.id, 'Cancelled')}
+                          className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 border border-red-100"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-12 text-center text-coklat-susu font-bold">No bookings found.</div>
+            )}
           </div>
         </motion.div>
       </div>

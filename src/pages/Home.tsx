@@ -18,33 +18,33 @@ export default function Home() {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-7xl mx-auto px-6 py-8 md:py-16">
         {/* Hero Section */}
-        <section className="flex flex-col lg:flex-row items-center gap-12 mb-32 relative">
-          <div className="lg:w-1/2 space-y-10 z-10">
+        <section className="flex flex-col lg:flex-row items-center gap-8 md:gap-12 mb-20 md:mb-32 relative">
+          <div className="lg:w-1/2 space-y-6 md:space-y-10 z-10 text-center lg:text-left">
             <motion.h1 
-              initial={{ x: -30, opacity: 0 }}
+              initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="text-6xl md:text-7xl font-bold text-coklat-tua leading-tight font-poppins"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-coklat-tua leading-tight font-poppins"
             >
               Learn Baking with Fun & Creativity
             </motion.h1>
             <motion.p 
-              initial={{ x: -30, opacity: 0 }}
+              initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-xl text-coklat-susu leading-relaxed max-w-lg"
+              className="text-base md:text-xl text-coklat-susu leading-relaxed max-w-lg mx-auto lg:mx-0"
             >
               Join our aesthetic baking classes. From cute Korean bento cakes to delicious soft cookies, discover your inner pastry chef in our cozy space.
             </motion.p>
             <motion.div
-              initial={{ x: -30, opacity: 0 }}
+              initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
               <button 
                 onClick={() => document.getElementById('classes')?.scrollIntoView({ behavior: 'smooth' })}
-                className="btn-primary text-lg px-10 py-5"
+                className="btn-primary text-base md:text-lg px-8 md:px-10 py-4 md:py-5 w-full sm:w-auto"
               >
                 Book a Class Now
               </button>
@@ -52,13 +52,13 @@ export default function Home() {
           </div>
           
           <motion.div 
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="lg:w-1/2 relative"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="lg:w-1/2 relative w-full max-w-md lg:max-w-none"
           >
-            <div className="absolute inset-0 bg-pink-pastel/20 rounded-[40px] blur-3xl transform translate-x-10 translate-y-10"></div>
+            <div className="absolute inset-0 bg-pink-pastel/20 rounded-[30px] md:rounded-[40px] blur-3xl transform translate-x-5 md:translate-x-10 translate-y-5 md:translate-y-10"></div>
             <img 
-              className="relative w-full h-[600px] object-cover rounded-[40px] shadow-2xl rotate-3 hover:rotate-0 transition-all duration-500" 
+              className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-[30px] md:rounded-[40px] shadow-2xl md:rotate-3 hover:rotate-0 transition-all duration-500" 
               src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&q=80" 
               alt="Delicious Cookie" 
             />
